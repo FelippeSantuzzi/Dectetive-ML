@@ -1,4 +1,4 @@
-
+#Explicação:
 #  PROJETO DETECTIVE — Fase 1 (Teste)
 #  Objetivo: instalar as bibliotecas e fazer o primeiro
 #  contato com a página do concorrente no Mercado Livre.

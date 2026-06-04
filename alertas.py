@@ -15,7 +15,6 @@ from historico import carregar_historico
 ESTOQUE_CRITICO   = 5     # unidades — abaixo disso é alerta crítico
 VARIACAO_PRECO    = 2.0   # reais — diferença mínima para gerar alerta
 
-─────────────────────────────────────────────────────────────
 
 def verificar_alertas(dados_atual):
     """

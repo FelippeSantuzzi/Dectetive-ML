@@ -1,19 +1,35 @@
-
+# ============================================================
 #  PROJETO DETECTIVE — historico.py
 #  Responsabilidade: receber o dicionário de dados extraído
 #  pelo extrator.py e salvar em CSV com timestamp.
-#  Estrutura do CSV:
+#
+#  Biblioteca usada: csv e datetime (já vêm com o Python)
+#
+#  Por que CSV?
+#  Simples, leve, abre no Excel e no Streamlit.
+#  Cada linha = uma execução do DETECTIVE no tempo.
+#  Com isso criamos o histórico de preços do concorrente.
+#
+#  Estrutura do CSV gerado:
 #  data_hora | titulo | preco | preco_original | desconto |
 #  frete_gratis | estoque | avaliacoes | vendas
+# ============================================================
+
 import csv
 import os
 from datetime import datetime
 
-ARQUIVO_CSV = "historico_concorrente.csv"
+# ─────────────────────────────────────────────────────────────
+# CONFIGURAÇÕES
+# ─────────────────────────────────────────────────────────────
+
+ARQUIVO_CSV = "/Users/user/Documents/Detectetive/historico_concorrente.csv"
 
 COLUNAS = [
     "data_hora",
     "titulo",
+    "imagem",
+    "link",
     "preco",
     "preco_original",
     "desconto",
@@ -23,6 +39,11 @@ COLUNAS = [
     "avaliacoes",
     "vendas",
 ]
+
+# ─────────────────────────────────────────────────────────────
+# FUNÇÃO PRINCIPAL
+# ─────────────────────────────────────────────────────────────
+
 def salvar_historico(dados):
     """
     Recebe o dicionário de dados do extrator.py e salva
@@ -42,16 +63,18 @@ def salvar_historico(dados):
         print("[HISTORICO] ❌ Dados inválidos — nada a salvar.")
         return None
 
+    # Adiciona o timestamp ao dicionário
     dados["data_hora"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
+    # Verifica se o CSV já existe para saber se precisa do cabeçalho
     arquivo_existe = os.path.exists(ARQUIVO_CSV)
 
     try:
-  
+        # 'a' = append — adiciona ao final sem apagar o que já existe
         with open(ARQUIVO_CSV, "a", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=COLUNAS, extrasaction="ignore")
 
-          
+            # Escreve o cabeçalho só se o arquivo for novo
             if not arquivo_existe:
                 writer.writeheader()
                 print(f"[HISTORICO] 📁 Novo arquivo criado: {ARQUIVO_CSV}")
@@ -126,12 +149,20 @@ def resumo_historico():
         "ultima_coleta"   : registros[-1]["data_hora"],
     }
 
+
+# ─────────────────────────────────────────────────────────────
+# TESTE ISOLADO
+# Usa os dados reais que já extraímos do concorrente
+# ─────────────────────────────────────────────────────────────
+
 if __name__ == "__main__":
 
     print("=" * 55)
     print("   DETECTIVE — Testando historico.py")
     print("=" * 55 + "\n")
 
+    # Simula os dados reais capturados pelo extrator.py
+    # (em produção esses dados vêm do extrator de verdade)
     dados_teste = {
         "titulo"        : "Mangote Térmico Industrial Alta Temperatura Cozinha Par Epi",
         "preco"         : 145.41,
@@ -150,7 +181,7 @@ if __name__ == "__main__":
     if arquivo:
         print(f"\n✅ Dados salvos em: {arquivo}")
 
-        
+        # Mostra o resumo
         resumo = resumo_historico()
         if resumo:
             print("\n── Resumo do Histórico ──────────────────────────")

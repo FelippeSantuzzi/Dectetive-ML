@@ -13,10 +13,11 @@ import random
 # URL agrupada com o ID do anúncio do concorrente
 URL_PRODUTO = (
     "https://www.mercadolivre.com.br/"
-    "mangote-termico-industrial-alta-temperatura-cozinha-par-epi/"
-    "up/MLBU3534355699"
-    "?pdp_filters=item_id%3AMLB4288664161"
+    "mangote-termico-alta-temperatura-cozinha-industrial-par-epi/"
+    "up/MLBU2046181196"
+    "?pdp_filters=item_id%3AMLB5105688206"
 )
+
 
 TIMEOUT = 30
 

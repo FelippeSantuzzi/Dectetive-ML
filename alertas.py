@@ -3,6 +3,9 @@
 #  Responsabilidade: comparar o estado ATUAL do concorrente
 #  com o estado ANTERIOR salvo no CSV e gerar alertas
 #  para qualquer mudança detectada.
+#
+#  Sem biblioteca externa — usa só Python puro.
+#
 #  Alertas gerados:
 #    🔴 CRÍTICO  → estoque zerou ou frete grátis ativado
 #    🟡 ATENÇÃO  → preço caiu ou desconto aumentou
@@ -12,9 +15,19 @@
 
 from historico import carregar_historico
 
+
+# ─────────────────────────────────────────────────────────────
+# LIMIARES DE ALERTA
+# Ajuste conforme sua estratégia de negócio
+# ─────────────────────────────────────────────────────────────
+
 ESTOQUE_CRITICO   = 5     # unidades — abaixo disso é alerta crítico
 VARIACAO_PRECO    = 2.0   # reais — diferença mínima para gerar alerta
 
+
+# ─────────────────────────────────────────────────────────────
+# FUNÇÃO PRINCIPAL
+# ─────────────────────────────────────────────────────────────
 
 def verificar_alertas(dados_atual):
     """
@@ -34,8 +47,10 @@ def verificar_alertas(dados_atual):
     if not dados_atual:
         return alertas
 
+    # Carrega o histórico para pegar o estado anterior
     historico = carregar_historico()
 
+    # ── Primeira execução — sem histórico para comparar ──────
     if len(historico) < 2:
         alertas.append({
             "nivel"   : "info",
@@ -47,10 +62,10 @@ def verificar_alertas(dados_atual):
         })
         return alertas
 
- 
+    # Pega o penúltimo registro como "estado anterior"
     anterior = historico[-2]
 
-
+    # ── 1. ALERTA DE PREÇO ───────────────────────────────────
     try:
         preco_atual    = float(dados_atual.get("preco", 0))
         preco_anterior = float(anterior.get("preco", 0))
@@ -58,7 +73,7 @@ def verificar_alertas(dados_atual):
 
         if abs(diferenca) >= VARIACAO_PRECO:
             if diferenca < 0:
-                
+                # Concorrente BAIXOU o preço — atenção!
                 alertas.append({
                     "nivel"   : "atencao",
                     "emoji"   : "🟡",
@@ -68,7 +83,7 @@ def verificar_alertas(dados_atual):
                     "acao"    : "Avalie se precisa ajustar seu preço para manter competitividade.",
                 })
             else:
-                
+                # Concorrente SUBIU o preço — oportunidade!
                 alertas.append({
                     "nivel"   : "positivo",
                     "emoji"   : "🟢",
@@ -80,18 +95,19 @@ def verificar_alertas(dados_atual):
     except:
         pass
 
+    # ── 2. ALERTA DE ESTOQUE ─────────────────────────────────
     try:
         estoque_atual    = dados_atual.get("estoque")
         estoque_anterior = anterior.get("estoque")
 
-        
+        # Converte para int se possível
         if estoque_anterior and str(estoque_anterior).isdigit():
             estoque_anterior = int(estoque_anterior)
         else:
             estoque_anterior = None
 
         if estoque_atual is not None:
-       
+            # Estoque crítico — poucas unidades
             if estoque_atual <= ESTOQUE_CRITICO:
                 alertas.append({
                     "nivel"   : "critico",
@@ -102,7 +118,7 @@ def verificar_alertas(dados_atual):
                                 "você logo será o único vendedor disponível.",
                 })
 
-           
+            # Estoque caindo
             elif estoque_anterior and estoque_atual < estoque_anterior:
                 alertas.append({
                     "nivel"   : "positivo",
@@ -112,7 +128,7 @@ def verificar_alertas(dados_atual):
                     "acao"    : "Fique de olho. Se continuar caindo, prepare-se para subir seu preço.",
                 })
 
-            
+            # Estoque zerou
             elif estoque_atual == 0:
                 alertas.append({
                     "nivel"   : "critico",
@@ -125,7 +141,7 @@ def verificar_alertas(dados_atual):
     except:
         pass
 
-  
+    # ── 3. ALERTA DE FRETE ───────────────────────────────────
     try:
         frete_atual    = str(dados_atual.get("frete_gratis", "")).lower()
         frete_anterior = str(anterior.get("frete_gratis", "")).lower()
@@ -153,7 +169,7 @@ def verificar_alertas(dados_atual):
     except:
         pass
 
-    
+    # ── 4. ALERTA DE AVALIAÇÕES ──────────────────────────────
     try:
         aval_atual    = int(dados_atual.get("avaliacoes", 0))
         aval_anterior = int(anterior.get("avaliacoes", 0))
@@ -170,7 +186,7 @@ def verificar_alertas(dados_atual):
     except:
         pass
 
-  
+    # ── Sem mudanças ─────────────────────────────────────────
     if not alertas:
         alertas.append({
             "nivel"   : "info",
@@ -200,6 +216,11 @@ def exibir_alertas(alertas):
         print(f"   ⚡ AÇÃO: {a['acao']}")
 
     print("\n" + "=" * 55)
+
+
+# ─────────────────────────────────────────────────────────────
+# TESTE ISOLADO
+# ─────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
 

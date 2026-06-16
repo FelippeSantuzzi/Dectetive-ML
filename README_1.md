@@ -15,7 +15,7 @@ Preço, estoque, frete e avaliações — qualquer mudança é capturada e trans
 
 ## O Desafio
 
-Sites como o Mercado Livre são robustos e bloqueiam qualquer sistema automatizado que tente acessar seus dados. O desafio foi burlar essa proteção e fazer nosso programa se comportar de forma indistinguível de um ser humano navegando na internet.
+Sites como o Mercado Livre são robustos e bloqueiam qualquer sistema automatizado que tente acessar seus dados. O desafio foi ultrapassar essa proteção e fazer nosso programa se comportar de forma indistinguível de um ser humano navegando na internet.
 
 ### Por que o requests falhou?
 

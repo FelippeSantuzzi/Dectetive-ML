@@ -145,11 +145,8 @@ O dashboard permite:
 
 ## A Apresentação
 
->  **Em breve.**
->
-> Os slides da apresentação serão publicados aqui no dia da apresentação.
-> Não queremos spoilers — mas podemos adiantar que o Selenium
-> vai chegar de limusine. 🚗
+https://prezi.com/p/edit/nlftlcaz8rkn/
+- O Selenium vai chegar de limusine. 🚗
 
 ---
 
